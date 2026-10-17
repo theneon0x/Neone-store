@@ -17,7 +17,7 @@ const NEONE_CONFIG = {
 
   // The message a customer sends when they ask to join your WhatsApp updates.
   // Their name goes after "My name is:". Each \n is a line break.
-  updatesMessage: 'Hi, please add me to your Broadcast list for new arrivals.\n\nMy name is: ',
+  updatesMessage: 'Hi Neone, please add me to your WhatsApp broadcast for new arrivals.\n\nMy name is: ',
 
   // Change this date whenever you change the Terms or the Delivery and Returns policy.
   // Customers who agreed before will then be asked to agree again on their next order.
