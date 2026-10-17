@@ -3,6 +3,7 @@
 const wantedTag = (new URLSearchParams(location.search).get('tag') || '').trim();
 
 let product = null;
+let shown = [];   // the photo addresses showing in the gallery right now
 const chosen = { size: '', color: '' };
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -32,11 +33,23 @@ function showNotFound() {
 
 // ---------- Photos ----------
 
+// Photos shown for the chosen color. A photo with no color shows for every color.
+// Before a color is chosen, the page opens on the color of the cover photo.
+function photosForColor() {
+  const images = product.images || [];
+  const tags = product.image_colors || [];
+  const color = chosen.color || tags[0] || '';
+  if (!color || !tags.some(Boolean)) return images;
+  const list = images.filter((url, i) => !tags[i] || tags[i] === color);
+  return list.length > 0 ? list : images;
+}
+
 function renderGallery() {
   const track = $('gallery-track');
   track.replaceChildren();
 
-  const images = product.images || [];
+  shown = photosForColor();
+  const images = shown;
 
   if (images.length === 0) {
     const empty = document.createElement('div');
@@ -60,6 +73,7 @@ function renderGallery() {
   });
 
   buildDots();
+  track.scrollLeft = 0;
   updateGalleryPosition();
 }
 
@@ -72,7 +86,7 @@ function currentSlide() {
 const MAX_DOTS = 10;   // with more photos than this, show "3 / 14" instead of dots
 
 function buildDots() {
-  const total = (product.images || []).length;
+  const total = shown.length;
   const box = $('gallery-dots');
   box.replaceChildren();
   box.hidden = total < 2;
@@ -86,7 +100,7 @@ function buildDots() {
 }
 
 function updateGalleryPosition() {
-  const total = (product.images || []).length;
+  const total = shown.length;
   const index = Math.min(currentSlide(), Math.max(total - 1, 0));
 
   // Dots (phones): the current one is dark.
@@ -165,6 +179,7 @@ function renderColors() {
       chosen.color = color.name;
       $('choice-error').textContent = '';
       renderColors();
+      renderGallery();
     });
     box.appendChild(button);
   });
@@ -259,6 +274,84 @@ function renderTestimonials() {
   }));
 }
 
+// ---------- You may also like ----------
+
+function makeRelatedCard(item, index) {
+  const li = document.createElement('li');
+
+  const link = document.createElement('a');
+  link.className = 'card';
+  link.href = 'product.html?tag=' + encodeURIComponent(item.tag);
+
+  const media = document.createElement('div');
+  media.className = 'card-media';
+
+  const first = (item.thumbs && item.thumbs[0]) || (item.images && item.images[0]);
+  const second = (item.thumbs && item.thumbs[1]) || (item.images && item.images[1]);
+
+  [[first, ''], [second, ' card-image-second']].forEach(([src, extra], i) => {
+    if (!src || (i === 1 && !first)) return;
+    const img = document.createElement('img');
+    img.className = 'card-image' + extra;
+    img.src = src;
+    img.alt = i === 0 ? item.name : '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    media.appendChild(img);
+  });
+
+  const info = document.createElement('div');
+  info.className = 'card-info';
+  const name = document.createElement('p');
+  name.className = 'card-name';
+  name.textContent = item.name;
+  const price = document.createElement('p');
+  price.className = 'card-price';
+  price.textContent = formatNaira(item.price);
+  info.append(name, price);
+
+  link.append(media, info);
+  li.appendChild(link);
+  return li;
+}
+
+// Up to 4 other products from the same section, the same category first.
+// If anything goes wrong, the block simply does not show.
+async function renderRelated() {
+  try {
+    const { data, error } = await db
+      .from('products')
+      .select('id, tag, name, category, price, images, thumbs')
+      .eq('status', 'active')
+      .eq('gender', product.gender)
+      .neq('id', product.id)
+      .order('created_at', { ascending: false })
+      .limit(24);
+
+    if (error || !data || data.length === 0) return;
+
+    const same = data.filter((item) => item.category === product.category);
+    const others = data.filter((item) => item.category !== product.category);
+    const picks = [...same, ...others].slice(0, 4);
+
+    const section = document.createElement('section');
+    section.id = 'related';
+    section.className = 'related';
+
+    const heading = document.createElement('h2');
+    heading.textContent = 'You may also like';
+
+    const list = document.createElement('ul');
+    list.className = 'grid related-grid';
+    list.replaceChildren(...picks.map(makeRelatedCard));
+
+    section.append(heading, list);
+    $('product-view').appendChild(section);
+  } catch (e) {
+    // Nothing to show.
+  }
+}
+
 // ---------- Start ----------
 
 function fillPage() {
@@ -286,6 +379,20 @@ function fillPage() {
   updateGalleryPosition();
 }
 
+async function loadProduct() {
+  const base = 'id, tag, name, gender, category, price, sizes, colors, images, thumbs, ';
+  const tail = 'testimonials(id, image_url, created_at)';
+  const run = (fields) => db.from('products').select(fields)
+    .eq('status', 'active').eq('tag', wantedTag).maybeSingle();
+
+  let result = await run(base + 'image_colors, ' + tail);
+  // If the image_colors column does not exist yet, use the old list so the page still works.
+  if (result.error && /image_colors/.test(result.error.message || '')) {
+    result = await run(base + tail);
+  }
+  return result;
+}
+
 async function start() {
   if (!wantedTag) {
     showNotFound();
@@ -294,12 +401,7 @@ async function start() {
 
   setupAiNotice();
 
-  const { data, error } = await db
-    .from('products')
-    .select('id, tag, name, gender, category, price, sizes, colors, images, thumbs, testimonials(id, image_url, created_at)')
-    .eq('status', 'active')
-    .eq('tag', wantedTag)
-    .maybeSingle();
+  const { data, error } = await loadProduct();
 
   if (error) {
     showState('Could not load this product. Please check your connection and refresh.');
@@ -312,6 +414,7 @@ async function start() {
 
   product = data;
   fillPage();
+  renderRelated();
   trackEvent('view_item', { currency: 'NGN', value: product.price,
     items: [{ item_id: product.tag, item_name: product.name, item_category: product.category, price: product.price }] });
 

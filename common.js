@@ -314,5 +314,86 @@ function setupUpdates() {
   section.hidden = false;
 }
 
+// ---------- Footer contact links and the Help button ----------
+
+// The WhatsApp icon on the Help button (its color follows the button's text color).
+const HELP_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17.6 6.32A7.85 7.85 0 0 0 12 4a7.94 7.94 0 0 0-6.88 11.89L4 20l4.2-1.1a7.93 7.93 0 0 0 3.79 1a8 8 0 0 0 8-7.93a8 8 0 0 0-2.39-5.65ZM12 18.53a6.58 6.58 0 0 1-3.36-.92l-.24-.15l-2.49.66l.66-2.43l-.16-.25a6.6 6.6 0 0 1 10.25-8.17a6.65 6.65 0 0 1 2 4.66a6.66 6.66 0 0 1-6.66 6.6Zm3.61-4.94c-.2-.1-1.17-.58-1.35-.64s-.32-.1-.45.1a9 9 0 0 1-.63.77c-.11.14-.23.15-.43 0a5.33 5.33 0 0 1-2.69-2.35c-.21-.35.2-.33.58-1.08a.38.38 0 0 0 0-.35c0-.1-.45-1.08-.61-1.47s-.32-.33-.45-.34h-.39a.71.71 0 0 0-.53.25A2.19 2.19 0 0 0 8 10.17a3.82 3.82 0 0 0 .81 2.05a8.89 8.89 0 0 0 3.39 3a3.85 3.85 0 0 0 2.38.5a2 2 0 0 0 1.33-.94a1.62 1.62 0 0 0 .12-.94c-.09-.1-.22-.15-.42-.25Z"/></svg>';
+
+function whatsappLink(text) {
+  return 'https://wa.me/' + NEONE_CONFIG.whatsappNumber + '?text=' + encodeURIComponent(text);
+}
+
+function setupContact() {
+  if (!/^\d{10,15}$/.test(NEONE_CONFIG.whatsappNumber)) return;   // number not set up: show nothing
+
+  // Contact and social links, under the policy links in the footer.
+  const footer = document.querySelector('.site-footer');
+  if (footer) {
+    const social = NEONE_CONFIG.social || {};
+    const links = [['WhatsApp', whatsappLink(NEONE_CONFIG.helpMessage)]];
+    if (social.instagram) links.push(['Instagram', 'https://www.instagram.com/' + encodeURIComponent(social.instagram) + '/']);
+    if (social.tiktok) links.push(['TikTok', 'https://www.tiktok.com/@' + encodeURIComponent(social.tiktok)]);
+    if (social.x) links.push(['X', 'https://x.com/' + encodeURIComponent(social.x)]);
+
+    const nav = document.createElement('nav');
+    nav.className = 'footer-links';
+    nav.setAttribute('aria-label', 'Contact and social media');
+    links.forEach(([label, href]) => {
+      const link = document.createElement('a');
+      link.href = href;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = label;
+      nav.appendChild(link);
+    });
+
+    const policies = footer.querySelector('.footer-links');
+    if (policies) policies.after(nav); else footer.prepend(nav);
+  }
+
+  // The floating Help button, on the home page only.
+  if (document.querySelector('.hero')) {
+    const help = document.createElement('a');
+    help.id = 'help-button';
+    help.className = 'help-button';
+    help.href = whatsappLink(NEONE_CONFIG.helpMessage);
+    help.target = '_blank';
+    help.rel = 'noopener';
+    help.setAttribute('aria-label', 'Get help on WhatsApp');
+
+    if (HELP_ICON_SVG) {
+      const icon = document.createElement('span');
+      icon.className = 'help-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.innerHTML = HELP_ICON_SVG;
+      help.appendChild(icon);
+    }
+    const text = document.createElement('span');
+    text.textContent = 'Help';
+    help.appendChild(text);
+
+    help.addEventListener('click', () => trackEvent('help_whatsapp'));
+    document.body.appendChild(help);
+    document.body.classList.add('has-help');
+  }
+}
+
+// ---------- The little icon in the browser tab ----------
+
+function setupIcons() {
+  const add = (rel, href, extra) => {
+    if (document.querySelector('link[rel="' + rel + '"]')) return;
+    const link = document.createElement('link');
+    link.rel = rel;
+    link.href = href;
+    if (extra) link.type = extra;
+    document.head.appendChild(link);
+  };
+  add('icon', 'favicon.png', 'image/png');
+  add('apple-touch-icon', 'apple-touch-icon.png');
+}
+
+setupIcons();
 setupCookies();
 setupUpdates();
+setupContact();

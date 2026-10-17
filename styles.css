@@ -659,3 +659,39 @@ body.has-order-bar .cookie-banner { bottom: calc(76px + env(safe-area-inset-bott
   border-radius: 6px;
   text-decoration: none;
 }
+
+/* ---------- Help button (home page) ---------- */
+
+.help-button {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--ink);
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.help-icon { display: inline-flex; width: 20px; height: 20px; }
+.help-icon svg { width: 100%; height: 100%; }
+body.has-order-bar .help-button { bottom: calc(76px + env(safe-area-inset-bottom)); }
+body.has-help { padding-bottom: 80px; }
+body.has-help.has-order-bar { padding-bottom: 140px; }
+
+/* ---------- You may also like ---------- */
+
+.related { padding: 40px 16px 0; }
+.related h2 { font-size: 20px; }
+.related-grid { margin-top: 12px; }
+
+@media (min-width: 800px) {
+  .related { padding: 56px 0 0; }
+  .related-grid { grid-template-columns: repeat(4, 1fr); gap: 24px 12px; }
+}

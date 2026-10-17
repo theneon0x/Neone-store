@@ -19,6 +19,16 @@ const NEONE_CONFIG = {
   // Their name goes after "My name is:". Each \n is a line break.
   updatesMessage: 'Hi Neone, please add me to your WhatsApp broadcast for new arrivals.\n\nMy name is: ',
 
+  // Your social media names, for the footer links. Leave one empty and its link does not show.
+  social: {
+    instagram: 'shop.neone',
+    tiktok: 'neone.official',
+    x: 'neone_official'
+  },
+
+  // The message a customer sends from the Help button and the footer WhatsApp link.
+  helpMessage: 'Hi, I need help with: ',
+
   // Change this date whenever you change the Terms or the Delivery and Returns policy.
   // Customers who agreed before will then be asked to agree again on their next order.
   termsVersion: '2026-10-15',
