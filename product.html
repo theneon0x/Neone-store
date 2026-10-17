@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Neone home"><em>ne</em><strong>ONE</strong></a>
+
+    <form id="search-form" class="header-search" action="shop.html" method="get" role="search">
+      <label class="visually-hidden" for="search-input">Search by product code or name</label>
+      <input id="search-input" name="q" type="search" placeholder="Search by product code" autocomplete="off">
+      <button class="search-button" type="submit">Search</button>
+    </form>
+  </header>
+
+  <main class="product-page">
+
+    <div id="product-state" class="shop-message" role="status">Loading...</div>
+
+    <div id="product-view" hidden>
+      <p class="crumbs"><a id="back-link" href="shop.html">Back to shop</a></p>
+
+      <div class="product-layout">
+
+        <!-- Photos -->
+        <div class="gallery">
+          <div id="gallery-track" class="gallery-track" tabindex="0" role="region" aria-label="Product photos"></div>
+
+          <!-- The AI notice. It only shows while the first photo is in view. -->
+          <div id="ai-badge" class="ai-badge" hidden>
+            <button id="ai-button" class="ai-button" type="button" aria-expanded="false" aria-controls="ai-note" aria-label="This image was created with AI. Show details">
+              <span class="icon-slot">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7.53 1.282a.5.5 0 0 1 .94 0l.478 1.306a7.492 7.492 0 0 0 4.464 4.464l1.305.478a.5.5 0 0 1 0 .94l-1.305.478a7.492 7.492 0 0 0-4.464 4.464l-.478 1.305a.5.5 0 0 1-.94 0l-.478-1.305a7.492 7.492 0 0 0-4.464-4.464L1.282 8.47a.5.5 0 0 1 0-.94l1.306-.478a7.492 7.492 0 0 0 4.464-4.464Z"/></svg>
+            </span>
+            </button>
+            <p id="ai-note" class="ai-note" hidden>This image was created with AI to show how the item may look. The real product may differ. Check the next photos for a closer look.</p>
+          </div>
+
+          <!-- Arrows: shown on computers (wide screens) -->
+          <button id="gallery-prev" class="gallery-arrow gallery-arrow-prev" type="button" aria-label="Previous photo" hidden>
+            <span class="icon-slot" data-fallback="&lsaquo;">
+              <!-- [ICON: arrow-left] delete this comment and paste your svg here -->
+            </span>
+          </button>
+          <button id="gallery-next" class="gallery-arrow gallery-arrow-next" type="button" aria-label="Next photo" hidden>
+            <span class="icon-slot" data-fallback="&rsaquo;">
+              <!-- [ICON: arrow-right] delete this comment and paste your svg here -->
+            </span>
+          </button>
+
+          <!-- Dots: shown on phones (narrow screens) -->
+          <div id="gallery-dots" class="gallery-dots" aria-hidden="true"></div>
+          <p id="gallery-counter" class="visually-hidden" role="status"></p>
+        </div>
+
+        <!-- Details -->
+        <div class="product-info">
+          <h1 id="product-name"></h1>
+          <p id="product-price" class="product-price"></p>
+          <p id="product-code" class="muted"></p>
+
+          <fieldset id="color-group" class="option-group" hidden>
+            <legend>Color: <span id="color-name">choose one</span></legend>
+            <div id="color-options" class="color-options"></div>
+          </fieldset>
+
+          <fieldset id="size-group" class="option-group" hidden>
+            <legend>Size</legend>
+            <div id="size-options" class="size-options"></div>
+          </fieldset>
+
+          <p id="choice-error" class="choice-error" role="alert"></p>
+
+          <button id="add-button" class="primary-button" type="button">Add to order list</button>
+          <p id="add-status" class="add-status" role="status"></p>
+
+          <p class="flow-note">Send your order on WhatsApp. We confirm availability and the delivery fee with you before you pay.</p>
+        </div>
+      </div>
+
+      <!-- Only shown when this product has testimonials -->
+      <section id="testimonials" class="testimonials" hidden>
+        <h2>What customers say</h2>
+        <ul id="testimonial-list" class="testimonial-list"></ul>
+      </section>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Policies">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="delivery-returns.html">Delivery &amp; Returns</a>
+    </nav>
+    <p>Delivery nationwide.</p>
+    <p>Products sold on Neone are not affiliated with Neone in any way.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="product.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Your order list | Neone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="order">
+
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Neone home"><em>ne</em><strong>ONE</strong></a>
+
+    <form id="search-form" class="header-search" action="shop.html" method="get" role="search">
+      <label class="visually-hidden" for="search-input">Search by product code or name</label>
+      <input id="search-input" name="q" type="search" placeholder="Search by product code" autocomplete="off">
+      <button class="search-button" type="submit">Search</button>
+    </form>
+  </header>
+
+  <main class="order-page">
+    <p class="crumbs order-crumbs"><a href="shop.html">Continue shopping</a></p>
+
+    <h1>Your order list</h1>
+    <div class="order-head">
+      <p id="order-count" class="muted" role="status"></p>
+      <button id="clear-all" class="text-link-button" type="button" hidden>Clear all</button>
+    </div>
+
+    <div id="order-empty" class="shop-message" hidden>
+      <p>Your order list is empty.</p>
+      <a class="text-button link-as-button" href="shop.html">Start shopping</a>
+    </div>
+
+    <div id="order-content" hidden>
+      <p id="order-notice" class="order-notice" role="status" hidden></p>
+
+      <ul id="order-items" class="order-items"></ul>
+
+      <div class="order-total">
+        <span>Items total</span>
+        <strong id="order-total"></strong>
+      </div>
+      <p class="muted">Delivery fee is not included. We confirm it with you on WhatsApp before you pay.</p>
+
+      <div id="agree-row" class="agree-row">
+        <input id="agree" type="checkbox">
+        <label for="agree">I have read and agree to the <a href="terms.html" target="_blank" rel="noopener">Terms and Conditions</a> and the <a href="delivery-returns.html" target="_blank" rel="noopener">Delivery and Returns policy</a>. We will remember this on this device.</label>
+      </div>
+      <p id="agree-remembered" class="muted agree-remembered" hidden>You agreed to our <a href="terms.html" target="_blank" rel="noopener">Terms and Conditions</a> and <a href="delivery-returns.html" target="_blank" rel="noopener">Delivery and Returns policy</a> on an earlier order. Sending this order means you agree to them again.</p>
+
+      <p id="send-error" class="choice-error" role="alert"></p>
+
+      <button id="send-button" class="primary-button" type="button">Send order on WhatsApp</button>
+      <p class="flow-note">Your order opens in WhatsApp with everything filled in. Press send there. We confirm availability and the delivery fee before you pay.</p>
+
+      <div id="sent-box" class="sent-box" hidden>
+        <p>Your order has opened in WhatsApp. Press send there to complete it. After it is sent, you can clear this list.</p>
+        <button id="clear-button" class="text-button" type="button">Clear order list</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Policies">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="delivery-returns.html">Delivery &amp; Returns</a>
+    </nav>
+    <p>Delivery nationwide.</p>
+    <p>Products sold on Neone are not affiliated with Neone in any way.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="order.js"></script>
+</body>
+</html>
