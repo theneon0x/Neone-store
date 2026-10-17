@@ -159,32 +159,27 @@ function render() {
 
 function buildMessage() {
   const lines = [];
-  let total = 0;
   let number = 0;
 
   loadOrder().forEach((item) => {
     const info = lineInfo(item);
     if (!info.available) return;
     number += 1;
-    total += info.price * item.qty;
 
     lines.push(number + '. #' + item.tag + ' ' + item.name);
     const details = [];
     if (item.size) details.push('Size: ' + item.size);
     if (item.color) details.push('Color: ' + item.color);
     details.push('Qty: ' + item.qty);
-    details.push(formatNaira(info.price * item.qty));
     lines.push('   ' + details.join(' | '));
   });
 
   return {
     count: number,
     text: [
-      'Hello Neone, I would like to order:',
+      'Hi, I want to order these:',
       '',
       ...lines,
-      '',
-      'Items total: ' + formatNaira(total),
       '',
       'I have read and agree to the Terms and Conditions and the Delivery and Returns policy.',
       'Please confirm availability and the delivery fee.'
