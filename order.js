@@ -39,7 +39,6 @@ function rememberTerms() {
 function showAgreement() {
   const remembered = termsRemembered();
   $('agree-row').hidden = remembered;
-  $('agree-remembered').hidden = !remembered;
 }
 
 // ---------- Drawing the list ----------
