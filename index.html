@@ -3,210 +3,57 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Keeps search engines from listing this private tool -->
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#111111">
-  <link rel="icon" type="image/png" href="favicon.png">
-  <title>Neone HQ</title>
+  <title>Neone</title>
+  <meta name="description" content="Neone: clothes, shoes and accessories for men and women. Delivery nationwide.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="brand">Neone HQ</div>
-    <button id="logout" class="button button-light" type="button" hidden>Log out</button>
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Neone home"><em>ne</em><strong>ONE</strong></a>
+
+    <form id="search-form" class="header-search" action="shop.html" method="get" role="search">
+      <label class="visually-hidden" for="search-input">Search by product code or name</label>
+      <input id="search-input" name="q" type="search" placeholder="Search by product code" autocomplete="off">
+      <button class="search-button" type="submit">Search</button>
+    </form>
   </header>
 
-  <main class="page">
-
-    <!-- Shown when you are NOT logged in -->
-    <section id="login-view" class="card login-card">
-      <h1>Log in</h1>
-      <form id="login-form">
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="username" required>
-
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" required>
-
-        <p id="login-error" class="error" role="alert"></p>
-        <button id="login-button" class="button" type="submit">Log in</button>
-      </form>
+  <main>
+    <section class="hero" aria-label="Choose a section">
+      <a class="hero-panel" href="shop.html?g=men">
+        <img src="assets/hero-men.jpg" alt="" onerror="this.remove()">
+        <span class="hero-label">MEN</span>
+      </a>
+      <a class="hero-panel" href="shop.html?g=women">
+        <img src="assets/hero-women.jpg" alt="" onerror="this.remove()">
+        <span class="hero-label">WOMEN</span>
+      </a>
     </section>
 
-    <!-- Shown when you ARE logged in -->
-    <section id="app-view" hidden>
-
-      <p id="notice" class="notice" role="status" hidden></p>
-
-      <!-- The product list -->
-      <div id="list-view">
-        <div class="page-head">
-          <h1>Products</h1>
-          <button id="add-product" class="button" type="button">Add product</button>
-        </div>
-
-        <div class="toolbar">
-          <label class="visually-hidden" for="search">Search products</label>
-          <input id="search" type="search" placeholder="Search by tag, name, supplier or category">
-
-          <label class="visually-hidden" for="status-filter">Filter by status</label>
-          <select id="status-filter">
-            <option value="all">All statuses</option>
-            <option value="active">Active</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
-
-        <p id="list-message" class="muted" role="status"></p>
-
-        <div class="table-wrap">
-          <table id="product-table">
-            <thead>
-              <tr>
-                <th>Photo</th>
-                <th>Tag</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Your price</th>
-                <th>Supplier</th>
-                <th>Supplier price</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="product-rows"></tbody>
-          </table>
-        </div>
-
-        <div class="export-row">
-          <button id="export-products" class="button button-outline" type="button">Export backup</button>
-          <p class="muted">Saves all your product details to a file on this phone. The photos stay in Supabase storage and are listed in the file by address.</p>
-        </div>
-      </div>
-
-      <!-- The add / edit form -->
-      <div id="form-view" hidden>
-        <div class="page-head">
-          <h1 id="form-title">Add product</h1>
-        </div>
-
-        <form id="product-form" class="card form-card">
-
-          <h2>Product details</h2>
-
-          <label for="f-tag">Tag (the code customers and you search with)</label>
-          <input id="f-tag" type="text" autocomplete="off" required>
-
-          <label for="f-name">Product name</label>
-          <input id="f-name" type="text" autocomplete="off" required>
-
-          <fieldset>
-            <legend>Section</legend>
-            <div class="inline-options">
-              <div class="check">
-                <input id="g-men" type="radio" name="gender" value="men" required>
-                <label for="g-men">Men</label>
-              </div>
-              <div class="check">
-                <input id="g-women" type="radio" name="gender" value="women">
-                <label for="g-women">Women</label>
-              </div>
-            </div>
-          </fieldset>
-
-          <label for="f-category">Category</label>
-          <select id="f-category" required></select>
-
-          <fieldset>
-            <legend>Sizes available</legend>
-            <div id="size-options" class="inline-options"></div>
-            <label for="f-other-sizes">Other sizes (separate with commas, optional)</label>
-            <input id="f-other-sizes" type="text" autocomplete="off" placeholder="For example: 29, 31">
-          </fieldset>
-
-          <fieldset>
-            <legend>Colors available</legend>
-            <div class="color-row">
-              <div>
-                <label for="f-color-hex">Pick</label>
-                <input id="f-color-hex" type="color" value="#000000">
-              </div>
-              <div class="grow">
-                <label for="f-color-name">Color name</label>
-                <input id="f-color-name" type="text" autocomplete="off" placeholder="For example: Black">
-              </div>
-              <button id="add-color" class="button button-outline" type="button">Add color</button>
-            </div>
-            <p id="color-error" class="error" role="alert"></p>
-            <div id="color-list" class="chips"></div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Photos</legend>
-            <p class="muted">The first photo is the cover. On the store it gets the AI-image notice, so put your AI-made picture first. You can add as many photos as you need. They are shrunk automatically.</p>
-            <label for="f-photos">Add photos (JPG, PNG or WebP)</label>
-            <input id="f-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-            <p id="photo-error" class="error" role="alert"></p>
-            <ol id="photo-list" class="photo-list"></ol>
-          </fieldset>
-
-          <fieldset>
-            <legend>Testimonials</legend>
-            <p class="muted">Screenshots of customers talking about this product. These save the moment you add or remove them, so you do not need to press "Save product". Before uploading, hide customers' phone numbers and full names.</p>
-            <p id="testimonial-note" class="muted" hidden>Save the product first, then click Edit on it to add testimonials.</p>
-            <div id="testimonial-tools">
-              <label for="f-testimonials">Add screenshots (JPG, PNG or WebP)</label>
-              <input id="f-testimonials" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-              <p id="testimonial-error" class="error" role="alert"></p>
-              <ol id="testimonial-list" class="photo-list"></ol>
-            </div>
-          </fieldset>
-
-          <label for="f-price">Your price (naira)</label>
-          <input id="f-price" type="number" min="0" step="1" inputmode="numeric" required>
-
-          <fieldset>
-            <legend>Status</legend>
-            <div class="inline-options">
-              <div class="check">
-                <input id="s-active" type="radio" name="status" value="active">
-                <label for="s-active">Active (shown on the store)</label>
-              </div>
-              <div class="check">
-                <input id="s-archived" type="radio" name="status" value="archived" checked>
-                <label for="s-archived">Archived (hidden)</label>
-              </div>
-            </div>
-          </fieldset>
-
-          <h2>Private (only you can see this)</h2>
-
-          <label for="f-supplier">Supplier</label>
-          <input id="f-supplier" type="text" autocomplete="off">
-
-          <label for="f-supplier-price">Supplier's price (naira)</label>
-          <input id="f-supplier-price" type="number" min="0" step="1" inputmode="numeric">
-
-          <label for="f-notes">Notes</label>
-          <textarea id="f-notes" rows="3"></textarea>
-
-          <p id="form-error" class="error" role="alert"></p>
-
-          <div class="form-actions">
-            <button id="save-product" class="button" type="submit">Save product</button>
-            <button id="cancel-form" class="button button-outline" type="button">Cancel</button>
-          </div>
-        </form>
-      </div>
-
+    <!-- WhatsApp updates. It only appears once whatsappNumber is set in config.js. -->
+    <section id="updates" class="updates" hidden>
+      <h2>Be first to see new arrivals</h2>
+      <p>Get new arrivals on WhatsApp. Tap the button, add your name and press send. We only message you about new items, and you can leave any time by replying STOP.</p>
+      <a id="updates-link" class="updates-button" href="#" target="_blank" rel="noopener">Join on WhatsApp</a>
     </section>
-
   </main>
 
-  <!-- The Supabase library, then your settings, then the app code. Keep this order. -->
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Policies">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="delivery-returns.html">Delivery &amp; Returns</a>
+    </nav>
+    <p>Delivery nationwide.</p>
+    <p>Brands and products shown are not affiliated with Neone. Neone is an independent store.</p>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
-  <script src="app.js"></script>
+  <script src="common.js"></script>
 </body>
 </html>
