@@ -202,7 +202,12 @@ function render() {
   const categories = orderedCategories(base);
   if (state.category && !categories.includes(state.category)) state.category = '';
 
-  const inCategory = base.filter((p) => !state.category || p.category === state.category);
+  // The "All" views leave out categories listed in hiddenFromAll (like Fragrance),
+  // unless the shopper is searching or has picked that category.
+  const hidden = NEONE_CONFIG.hiddenFromAll || [];
+  const inCategory = base.filter((p) => state.category
+    ? p.category === state.category
+    : (searchText || !hidden.includes(p.category)));
 
   const sizes = collectSizes(inCategory);
   if (state.size && !sizes.includes(state.size)) state.size = '';

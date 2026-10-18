@@ -41,5 +41,9 @@ const NEONE_CONFIG = {
   categories: {
     men: ['Tops', 'Bottoms', 'Shoes', 'Slides', 'Headwear', 'Accessories', 'Fragrance', 'Others'],
     women: ['Tops', 'Bottoms', 'Dresses', 'Shoes', 'Bags', 'Accessories', 'Fragrance', 'Others']
-  }
+  },
+
+  // Categories left out of the "All" views (the All tab and the All button).
+  // They still show when a shopper picks the category itself or searches.
+  hiddenFromAll: ['Fragrance']
 };

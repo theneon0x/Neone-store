@@ -4,6 +4,7 @@ const wantedTag = (new URLSearchParams(location.search).get('tag') || '').trim()
 
 let product = null;
 let shown = [];   // the photo addresses showing in the gallery right now
+let shownAi = []; // for each of those photos: true if it was made with AI
 const chosen = { size: '', color: '' };
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -35,20 +36,33 @@ function showNotFound() {
 
 // Photos shown for the chosen color. A photo with no color shows for every color.
 // Before a color is chosen, the page opens on the color of the cover photo.
-function photosForColor() {
+// Returns the positions (0, 1, 2...) of the photos to show, so each photo
+// keeps its own AI flag.
+function photoPositionsForColor() {
   const images = product.images || [];
   const tags = product.image_colors || [];
+  const all = images.map((url, i) => i);
   const color = chosen.color || tags[0] || '';
-  if (!color || !tags.some(Boolean)) return images;
-  const list = images.filter((url, i) => !tags[i] || tags[i] === color);
-  return list.length > 0 ? list : images;
+  if (!color || !tags.some(Boolean)) return all;
+  const list = all.filter((i) => !tags[i] || tags[i] === color);
+  return list.length > 0 ? list : all;
+}
+
+// Is the photo at this position made with AI? Products saved before this
+// setting existed count their first photo as AI, like before.
+function isAiPhoto(position) {
+  const flags = product.image_ai;
+  if (!Array.isArray(flags) || flags.length === 0) return position === 0;
+  return flags[position] === true;
 }
 
 function renderGallery() {
   const track = $('gallery-track');
   track.replaceChildren();
 
-  shown = photosForColor();
+  const positions = photoPositionsForColor();
+  shown = positions.map((i) => product.images[i]);
+  shownAi = positions.map(isAiPhoto);
   const images = shown;
 
   if (images.length === 0) {
@@ -117,10 +131,14 @@ function updateGalleryPosition() {
   // For screen readers.
   $('gallery-counter').textContent = total > 1 ? 'Photo ' + (index + 1) + ' of ' + total : '';
 
-  // The AI notice belongs to the first photo only.
-  const onFirst = total > 0 && index === 0;
-  $('ai-badge').hidden = !onFirst;
-  if (!onFirst) setAiNote(false);
+  // The AI notice shows on every photo that is marked as AI in Neone HQ.
+  const isAi = total > 0 && shownAi[index] === true;
+  $('ai-badge').hidden = !isAi;
+  if (!isAi) setAiNote(false);
+
+  // "Check the next photos" only makes sense when a real photo comes later.
+  const realPhotoLater = shownAi.slice(index + 1).some((ai) => !ai);
+  $('ai-note').textContent = AI_NOTE + (realPhotoLater ? AI_NOTE_MORE : '');
 }
 
 function moveGallery(direction) {
@@ -129,6 +147,9 @@ function moveGallery(direction) {
 }
 
 // ---------- The AI notice ----------
+
+const AI_NOTE = 'This image was created with AI to show how the item may look. The real product may differ.';
+const AI_NOTE_MORE = ' Check the next photos for a closer look.';
 
 function setAiNote(open) {
   $('ai-note').hidden = !open;
@@ -330,8 +351,11 @@ async function renderRelated() {
 
     if (error || !data || data.length === 0) return;
 
+    // Categories kept out of the "All" views (like Fragrance) are not suggested
+    // here either, unless this product is in that category.
+    const hidden = NEONE_CONFIG.hiddenFromAll || [];
     const same = data.filter((item) => item.category === product.category);
-    const others = data.filter((item) => item.category !== product.category);
+    const others = data.filter((item) => item.category !== product.category && !hidden.includes(item.category));
     const picks = [...same, ...others].slice(0, 4);
 
     const section = document.createElement('section');
@@ -385,12 +409,16 @@ async function loadProduct() {
   const run = (fields) => db.from('products').select(fields)
     .eq('status', 'active').eq('tag', wantedTag).maybeSingle();
 
-  let result = await run(base + 'image_colors, ' + tail);
-  // If the image_colors column does not exist yet, use the old list so the page still works.
-  if (result.error && /image_colors/.test(result.error.message || '')) {
-    result = await run(base + tail);
+  // image_colors and image_ai were added later. If one does not exist in the
+  // database yet, leave it out so the page still works.
+  let extras = ['image_colors', 'image_ai'];
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const result = await run(base + extras.map((name) => name + ', ').join('') + tail);
+    const missing = result.error && extras.find((name) => (result.error.message || '').includes(name));
+    if (!missing) return result;
+    extras = extras.filter((name) => name !== missing);
   }
-  return result;
+  return run(base + tail);
 }
 
 async function start() {
