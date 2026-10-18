@@ -57,7 +57,7 @@ function sizeRank(size) {
 function collectSizes(list) {
   const all = new Set();
   list.forEach((p) => (p.sizes || []).forEach((s) => all.add(s)));
-  return Array.from(all).sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b));
+  return Array.from(all).sort((a, b) => sizeRank(a) - sizeRank(b) || a.localeCompare(b, undefined, { numeric: true }));
 }
 
 function sortProducts(list) {

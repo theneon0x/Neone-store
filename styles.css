@@ -123,6 +123,8 @@ img { display: block; max-width: 100%; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Keep the top of the photo (the heads) in view when the panel is cropped. */
+  object-position: center 10%;
 }
 
 /* A soft dark fade at the bottom so the white word is always readable. */

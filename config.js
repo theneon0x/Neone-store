@@ -39,7 +39,7 @@ const NEONE_CONFIG = {
   // The order the category buttons appear in on the shop page.
   // A category only shows when it has at least one active product.
   categories: {
-    men: ['Tops', 'Bottoms', 'Shoes', 'Slides', 'Headwear', 'Accessories', 'Others'],
-    women: ['Tops', 'Bottoms', 'Dresses', 'Shoes', 'Bags', 'Accessories', 'Others']
+    men: ['Tops', 'Bottoms', 'Shoes', 'Slides', 'Headwear', 'Accessories', 'Fragrance', 'Others'],
+    women: ['Tops', 'Bottoms', 'Dresses', 'Shoes', 'Bags', 'Accessories', 'Fragrance', 'Others']
   }
 };
